@@ -1,0 +1,31 @@
+# Hiperparâmetros do treino completo.
+# Usado por src/training/train.py quando NÃO está em modo smoke test.
+#
+# imgsz=640 (o padrão do YOLO, diferente do imgsz=960 usado no projeto
+# PlateDetector): o EDA (outputs/reports/eda_summary.md) mediu o caractere
+# ocupando mediana de ~12.5% da largura x ~35% da altura da imagem - nada
+# de objeto pequeno, ao contrário da placa no outro projeto (~0.3% da
+# área). Além disso todas as imagens já vêm fixas em 640x640 (stretch do
+# Roboflow) - treinar acima disso só faria upscale sintético, sem ganhar
+# detalhe real.
+#
+# batch=32 (maior que o batch=16 do PlateDetector): com imgsz menor
+# (640 vs 960) cabe mais imagem por lote na mesma GPU. É um chute inicial
+# para a T4/P100 do Kaggle - meça o tempo/época e o uso de VRAM no smoke
+# test na GPU antes de confirmar (ver notebooks/kaggle_train.ipynb) e
+# ajuste se sobrar ou faltar memória.
+#
+# epochs=100: mais que o epochs=80 do PlateDetector - aqui são 36 classes
+# em vez de 1, mesmo com bastante exemplo por classe (a mais rara, dígito
+# "0", ainda tem ~2831 instâncias). `patience` faz early stopping se não
+# houver ganho, então 100 é só o teto.
+#
+# Caminho relativo à raiz do repo (src/training/train.py resolve como
+# REPO_ROOT / model) - não ao diretório de onde o script é chamado.
+model: weights/yolo11n.pt
+imgsz: 640
+epochs: 80
+batch: 32
+patience: 20
+save_period: 10
+name: full_run
