@@ -15,10 +15,10 @@
 # test na GPU antes de confirmar (ver notebooks/kaggle_train.ipynb) e
 # ajuste se sobrar ou faltar memória.
 #
-# epochs=100: mais que o epochs=80 do PlateDetector - aqui são 36 classes
-# em vez de 1, mesmo com bastante exemplo por classe (a mais rara, dígito
-# "0", ainda tem ~2831 instâncias). `patience` faz early stopping se não
-# houver ganho, então 100 é só o teto.
+# epochs=80: mesmo teto do PlateDetector, mas por um motivo diferente aqui -
+# reduzido de 100 depois que uma sessão do Kaggle não terminou 100 dentro
+# das ~12h da sessão. `patience` faz early stopping se não houver ganho,
+# então 80 é só o teto.
 #
 # Caminho relativo à raiz do repo (src/training/train.py resolve como
 # REPO_ROOT / model) - não ao diretório de onde o script é chamado.

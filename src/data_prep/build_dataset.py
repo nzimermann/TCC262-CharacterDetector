@@ -96,7 +96,13 @@ def write_data_yaml(class_names_final: list):
     # which YAML would otherwise parse as integers instead of class names.
     names_str = ", ".join(f"'{name}'" for name in class_names_final)
     content = (
-        f"path: {OUT_DIR.resolve()}\n"
+        # no "path:" key on purpose: Ultralytics falls back to resolving
+        # train/val/test relative to wherever this data.yaml file itself
+        # is loaded from (not the current working directory, and not a
+        # path baked in at generation time), so this stays correct after
+        # data/yolo/ is copied or uploaded somewhere else entirely (e.g. a
+        # Kaggle dataset) - an explicit "path: ." would instead resolve
+        # against the process's cwd at training time, which is wrong here.
         "train: images/train\n"
         "val: images/val\n"
         "test: images/test\n"
