@@ -9,11 +9,14 @@
 # Roboflow) - treinar acima disso só faria upscale sintético, sem ganhar
 # detalhe real.
 #
-# batch=32 (maior que o batch=16 do PlateDetector): com imgsz menor
-# (640 vs 960) cabe mais imagem por lote na mesma GPU. É um chute inicial
-# para a T4/P100 do Kaggle - meça o tempo/época e o uso de VRAM no smoke
-# test na GPU antes de confirmar (ver notebooks/kaggle_train.ipynb) e
-# ajuste se sobrar ou faltar memória.
+# batch=64 (maior que o batch=16 do PlateDetector): com imgsz menor
+# (640 vs 960) cabe mais imagem por lote na mesma GPU. train.py treina com
+# DDP em todas as GPUs visíveis quando há mais de uma (ex.: "GPU T4 x2" do
+# Kaggle) - esse batch é o TOTAL, dividido entre as GPUs (64 = 32 por GPU
+# em duas T4), não o batch de cada uma. Em uma única GPU, 64 ainda deve
+# caber tranquilo num T4/P100 nesse imgsz, mas meça o uso de VRAM no smoke
+# test antes de confirmar (ver notebooks/kaggle_train.ipynb) e ajuste se
+# sobrar ou faltar memória.
 #
 # epochs=80: mesmo teto do PlateDetector, mas por um motivo diferente aqui -
 # reduzido de 100 depois que uma sessão do Kaggle não terminou 100 dentro
@@ -25,7 +28,7 @@
 model: weights/yolo11n.pt
 imgsz: 640
 epochs: 80
-batch: 32
+batch: 64
 patience: 20
 save_period: 10
 name: full_run
