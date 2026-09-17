@@ -10,6 +10,7 @@ plate, so a webcam frame showing a whole car will likely detect nothing.
 
 Usage:
     .venv/Scripts/python.exe src/inference/webcam_demo.py
+    .venv/Scripts/python.exe src/inference/webcam_demo.py --mirror
     .venv/Scripts/python.exe src/inference/webcam_demo.py --source 1 --conf 0.4
     .venv/Scripts/python.exe src/inference/webcam_demo.py --source path/to/video.mp4
 """
@@ -61,6 +62,13 @@ def main():
         default=640,
         help="640 casa com o treino (configs/train.yaml)",
     )
+    parser.add_argument(
+        "--mirror",
+        action="store_true",
+        help="desfaz o efeito espelho do driver da webcam antes de detectar - "
+        "sem isso, algumas webcams entregam o frame invertido horizontalmente "
+        "e a placa é lida da direita pra esquerda",
+    )
     args = parser.parse_args()
 
     if not args.weights.exists():
@@ -86,6 +94,8 @@ def main():
             if not ok:
                 print("Fonte de vídeo terminou ou falhou ao ler o frame.")
                 break
+            if args.mirror:
+                frame = cv2.flip(frame, 1)
 
             predictions = model(
                 frame, conf=args.conf, iou=args.iou, imgsz=args.imgsz, verbose=False
@@ -117,7 +127,7 @@ def main():
                         2,
                     )
 
-            plate_text = read_plate(detections)[::-1]
+            plate_text = read_plate(detections)
             plate_format = classify_plate(plate_text)
             if plate_format and plate_text != last_reading:
                 print(f"Placa lida ({plate_format}): {plate_text}")
